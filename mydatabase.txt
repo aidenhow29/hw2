@@ -1,0 +1,8 @@
+<products>
+book harry_potter 15.99 10 J.K.Rowling fiction fantasy
+clothing tshirt 19.99 5 cotton XL
+</products>
+<users>
+john 100.00 0
+alice 50.00 5
+</users>

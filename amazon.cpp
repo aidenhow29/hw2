@@ -5,18 +5,27 @@
 #include <vector>
 #include <iomanip>
 #include <algorithm>
+#include "mydatastore.h"
 #include "product.h"
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
 
 using namespace std;
+
 struct ProdNameSorter {
     bool operator()(Product* p1, Product* p2) {
         return (p1->getName() < p2->getName());
     }
 };
+
+
 void displayProducts(vector<Product*>& hits);
+
+
+std::map<std::string, std::vector<Product*>> userCart; 
+std::map<std::string, User*> users;
+
 
 int main(int argc, char* argv[])
 {
@@ -29,7 +38,7 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds;
 
 
 
@@ -45,11 +54,24 @@ int main(int argc, char* argv[])
     parser.addSectionParser("products", productSectionParser);
     parser.addSectionParser("users", userSectionParser);
 
+    //debugging
+    std::ifstream testFile(argv[1]);
+    if (!testFile) {
+    std::cerr << "ERROR: Could not open " << argv[1] << std::endl;
+    return 1;
+    }
+    std::cout << "DEBUG: Opened database file successfully!\n";
+    testFile.close();
+
+
     // Now parse the database to populate the DataStore
     if( parser.parse(argv[1], ds) ) {
         cerr << "Error parsing!" << endl;
         return 1;
     }
+
+    cout << "DEBUG: Finished parsing. Total Users: " << ds.getUsers().size() << endl;
+    users = ds.getUsers();
 
     cout << "=====================================" << endl;
     cout << "Menu: " << endl;
@@ -69,6 +91,7 @@ int main(int argc, char* argv[])
         getline(cin,line);
         stringstream ss(line);
         string cmd;
+
         if((ss >> cmd)) {
             if( cmd == "AND") {
                 string term;
@@ -77,9 +100,16 @@ int main(int argc, char* argv[])
                     term = convToLower(term);
                     terms.push_back(term);
                 }
+
+              /* debug */  cout << "DEBUG: Searching for (AND): ";
+                for (const string& t : terms) cout << t << " ";
+                cout << endl;
+
+
                 hits = ds.search(terms, 0);
                 displayProducts(hits);
             }
+
             else if ( cmd == "OR" ) {
                 string term;
                 vector<string> terms;
@@ -87,10 +117,89 @@ int main(int argc, char* argv[])
                     term = convToLower(term);
                     terms.push_back(term);
                 }
+
+                /* debug */  cout << "DEBUG: Searching for (OR): ";
+                for (const string& t : terms) cout << t << " ";
+                cout << endl;
+
                 hits = ds.search(terms, 1);
                 displayProducts(hits);
             }
-            else if ( cmd == "QUIT") {
+
+            else if ( cmd == "ADD" ) { //done
+                string username;
+                int hitIndex;
+                if(ss >> username >> hitIndex){
+                    if(hitIndex <= 0 || hitIndex > static_cast<int>(hits.size())){
+                        cout << "Invalid request" << endl;
+                    }
+                    else{
+                        userCart[username].push_back(hits[hitIndex - 1]);
+                        cout << "Added to cart" << endl;
+                    }
+                }
+                else{
+                    cout << "Invalid request" << endl;
+                }
+            }
+
+            else if ( cmd == "VIEWCART" ){ //done
+                string username;
+                if(ss >> username) {
+                    if(userCart.find(username) == userCart.end() || userCart[username].empty()){
+                        cout << "Cart is empty!" << endl;
+                    }
+                    else{
+                        cout << username << "'s Cart:" << endl;
+                        int count = 1;
+                        for(Product* p: userCart[username]){
+                            cout << "Item " << count << ":" << endl;
+                            cout << p->displayString() << endl;
+                            cout << endl;
+                            count++;
+                        }
+                    }
+                    
+                }
+                else{
+                    cout << "Invalid username" << endl;
+                }
+            }
+
+            else if ( cmd == "BUYCART" ){ // done
+                string username;
+                if(ss >> username){
+                    if (userCart.find(username) == userCart.end()){
+                        cout << "Invalid username" << endl;
+                    }
+                    else if(userCart[username].empty()){
+                        cout << "Cart is empty!" << endl;
+                    }
+                    else{
+                        User* user = users[username];
+                        vector<Product*>& cart = userCart[username];
+                        vector<Product*> remainingCart;
+
+                        for(Product* p : cart){
+                            if(p->getQty() > 0 && user->getBalance() >= p->getPrice()){
+                                p->subtractQty(1);
+                                user->deductAmount(p->getPrice());
+                                cout << "Purchased: " << p->getName() << endl;
+                            }
+                            else{
+                                remainingCart.push_back(p);
+                            }
+                        }
+
+                        cart = remainingCart;
+                    }
+                }
+                else{
+                    cout << "Invalid username" << endl;
+                }
+            }
+
+            else if ( cmd == "QUIT")  { 
                 string filename;
                 if(ss >> filename) {
                     ofstream ofile(filename.c_str());
@@ -98,6 +207,8 @@ int main(int argc, char* argv[])
                     ofile.close();
                 }
                 done = true;
+            }
+            
             }
 	    /* Add support for other commands here */
 
@@ -108,10 +219,12 @@ int main(int argc, char* argv[])
                 cout << "Unknown command" << endl;
             }
         }
+    
+        
+    return 0;
 
     }
-    return 0;
-}
+
 
 void displayProducts(vector<Product*>& hits)
 {

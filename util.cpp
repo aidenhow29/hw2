@@ -15,17 +15,35 @@ std::string convToLower(std::string src)
     to a set of words based on the criteria given in the assignment **/
 std::set<std::string> parseStringToWords(string rawWords)
 {
+    //if less than two characters, drop
+    //if contains punctuation, drop punctuation and proceeding characters
+    //only if product name, book author, and clothing brand
+    //rules don't apply for other key words (book ISBN and movie genre)
 
+    set<string> mySet;
+    // A (65)
+    // Z (90)
+    // a (97)
+    // z (122)
+    for(int i = 0; i < rawWords.length(); i++){
+        int ascii = rawWords[i];
+        //cout << ascii << endl;
+        if(ascii < 65 || (ascii > 90 & ascii < 97) || ascii > 122){
+          rawWords[i] = ' ';
+        } 
+    }
+    stringstream ss(rawWords);
+    string word;
 
-
-
-
-
-
-
-
-
+    while (ss >> word) {
+      if(word.length() > 1){
+        mySet.insert(convToLower(word));
+    }
+    }
+    return mySet;
 }
+    
+
 
 /**************************************************
  * COMPLETED - You may use the following functions
