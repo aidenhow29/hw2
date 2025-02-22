@@ -37,4 +37,3 @@ void User::dump(std::ostream& os)
     os << name_ << " "  << balance_ << " " << type_ << endl;
 }
 
-//test
