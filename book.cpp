@@ -23,7 +23,7 @@ std::set<std::string> Book:: keywords() const {
     returnSet = parseStringToWords(author_);
     std::set<std::string> tempSet;
     tempSet = parseStringToWords(name_);
-    tempSet.insert(ISBN_);
+    tempSet.insert(convToLower(ISBN_));
 
     returnSet.insert(tempSet.begin(), tempSet.end());
     
@@ -32,14 +32,16 @@ std::set<std::string> Book:: keywords() const {
 }
 
 std::string Book:: displayString() const {
-
-    std::string returnString = name_ + " " + std::to_string(price_) + " " + std::to_string(qty_) + " " + category_ + " " + ISBN_ + " " + author_ + " ";
-    return returnString;
+    std::stringstream ss("");
+    ss << std::fixed << std:: setprecision(2) << price_;
+    std::string returnString = name_ + "\n" + "Author: " + author_ + " " + "ISBN: " + ISBN_ + "\n" + ss.str() + " " + std::to_string(qty_) + " left.";
      
+    return returnString;
+
 }
 
 void Book:: dump(std::ostream& os) const{
-    os << name_ << "\n" << std::fixed << std::setprecision(2) << price_ << "\n" << std::to_string(qty_) << "\n" << category_ << "\n" << ISBN_ << "\n" << author_ << "\n";
+    os << category_ << "\n" << name_ << "\n" << std::fixed << std::setprecision(2) << price_ << "\n" << std::to_string(qty_) << "\n" << ISBN_ << "\n" << author_ << "\n";
 }
 
 

@@ -24,20 +24,34 @@ std::set<std::string> Clothing:: keywords() const {
     returnSet = parseStringToWords(brand_);
     std::set<std::string> tempSet;
     tempSet = parseStringToWords(name_);
-    tempSet.insert(size_);
+    tempSet.insert(convToLower(size_));
+    
+    std::set<std::string>:: iterator it;
+    for(it = tempSet.begin(); it != tempSet.end(); it++){
+      returnSet.insert(*it);
+    }
 
     return returnSet;
 
 }
 
 std::string Clothing:: displayString() const {
+    std::stringstream ss("");
+    ss << std::fixed << std:: setprecision(2) << price_;
+    std::string returnString = name_ + "\n" + "Size: " + size_ + " " + "Brand: " + brand_ + "\n" + ss.str() + " " + std::to_string(qty_) + " left.";
 
-    std::string returnString = name_ + " " + std::to_string(price_) + " " + std::to_string(qty_) + " " + category_ + " " + brand_ + " " + size_ + " ";
-     
+    return returnString;
 }
 
 void Clothing:: dump(std::ostream& os) const{
-    os << name_ << "\n" << std::fixed << std::setprecision(2) << price_ << "\n" << std::to_string(qty_) << "\n" << category_ << "\n" << brand_ << "\n" << size_ << "\n";
+    os << category_ << "\n" << name_ << "\n" << std::fixed << std::setprecision(2) << price_ << "\n" << std::to_string(qty_) << "\n" << size_ << "\n" << brand_ << "\n";
+
+    // std::set<std::string> temp = keywords();
+    // std::set<std::string>::iterator it = temp.begin();
+    // while(it != temp.end()){
+    //   os << *it;
+    //   it++;
+    // }
 }
 
 

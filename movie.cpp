@@ -24,20 +24,28 @@ std::set<std::string> Movie:: keywords() const {
     returnSet = parseStringToWords(genre_);
     std::set<std::string> tempSet;
     tempSet = parseStringToWords(name_);
-    tempSet.insert(rating_);
+    tempSet.insert(convToLower(rating_));
+
+    std::set<std::string>:: iterator it;
+    for(it = tempSet.begin(); it != tempSet.end(); it++){
+      returnSet.insert(*it);
+    }
 
     return returnSet;
 
 }
 
 std::string Movie:: displayString() const {
-
-    std::string returnString = name_ + " " + std::to_string(price_) + " " + std::to_string(qty_) + " " + category_ + " " + genre_ + " " + rating_ + " ";
+    std::stringstream ss("");
+    ss << std::fixed << std:: setprecision(2) << price_;
+    std::string returnString = name_ + "\n" + "Genre: " + genre_ + " " + "Rating: " + rating_ + "\n" + ss.str() + " " + std::to_string(qty_) + " left.";
      
+    return returnString;
+
 }
 
 void Movie:: dump(std::ostream& os) const{
-    os << name_ << "\n" << std::fixed << std::setprecision(2) << price_ << "\n" << std::to_string(qty_) << "\n" << category_ << "\n" << genre_ << "\n" << rating_ << "\n";
+    os << category_ << "\n" << name_ << "\n" << std::fixed << std::setprecision(2) << price_ << "\n" << std::to_string(qty_) << "\n" << genre_ << "\n" << rating_ << "\n";
 }
 
 

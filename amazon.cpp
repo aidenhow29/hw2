@@ -55,14 +55,14 @@ int main(int argc, char* argv[])
     parser.addSectionParser("products", productSectionParser);
     parser.addSectionParser("users", userSectionParser);
 
-    //debugging
-    std::ifstream testFile(argv[1]);
-    if (!testFile) {
-    std::cerr << "ERROR: Could not open " << argv[1] << std::endl;
-    return 1;
-    }
-    std::cout << "DEBUG: Opened database file successfully!\n";
-    testFile.close();
+    // //debugging
+    // std::ifstream testFile(argv[1]);
+    // if (!testFile) {
+    // std::cerr << "ERROR: Could not open " << argv[1] << std::endl;
+    // return 1;
+    // }
+    // std::cout << "DEBUG: Opened database file successfully!\n";
+    // testFile.close();
 
 
     // Now parse the database to populate the DataStore
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    cout << "DEBUG: Finished parsing. Total Users: " << ds.getUsers().size() << endl;
+    // cout << "DEBUG: Finished parsing. Total Users: " << ds.getUsers().size() << endl;
     users = ds.getUsers();
 
     cout << "=====================================" << endl;
@@ -102,9 +102,9 @@ int main(int argc, char* argv[])
                     terms.push_back(term);
                 }
 
-              /* debug */  cout << "DEBUG: Searching for (AND): ";
-                for (const string& t : terms) cout << t << " ";
-                cout << endl;
+              // /* debug */  cout << "DEBUG: Searching for (AND): ";
+              //   for (const string& t : terms) cout << t << " ";
+              //   cout << endl;
 
 
                 hits = ds.search(terms, 0);
@@ -119,9 +119,9 @@ int main(int argc, char* argv[])
                     terms.push_back(term);
                 }
 
-                /* debug */  cout << "DEBUG: Searching for (OR): ";
-                for (const string& t : terms) cout << t << " ";
-                cout << endl;
+                // /* debug */  cout << "DEBUG: Searching for (OR): ";
+                // for (const string& t : terms) cout << t << " ";
+                // cout << endl;
 
                 hits = ds.search(terms, 1);
                 displayProducts(hits);
@@ -129,8 +129,14 @@ int main(int argc, char* argv[])
 
             else if ( cmd == "ADD" ) { //done
                 string username;
+
                 int hitIndex;
                 if(ss >> username >> hitIndex){
+
+                    if(users.find(username) == users.end()){ //pls work
+                      cout << "Invalid username" << endl;
+                    }
+
                     if(hitIndex <= 0 || hitIndex > static_cast<int>(hits.size())){
                         cout << "Invalid request" << endl;
                     }
@@ -147,14 +153,18 @@ int main(int argc, char* argv[])
             else if ( cmd == "VIEWCART" ){ //done
                 string username;
                 if(ss >> username) {
-                    if(userCart.find(username) == userCart.end() || userCart[username].empty()){
+                    
+                    if(userCart.find(username) == userCart.end()){
+                        cout << "Invalid username" << endl;
+                    }
+                    if( userCart[username].empty()){
                         cout << "Cart is empty!" << endl;
                     }
+                
                     else{
-                        cout << username << "'s Cart:" << endl;
                         int count = 1;
                         for(Product* p: userCart[username]){
-                            cout << "Item " << count << ":" << endl;
+                            cout << "Item " << count << endl;
                             cout << p->displayString() << endl;
                             cout << endl;
                             count++;
@@ -177,6 +187,11 @@ int main(int argc, char* argv[])
                         cout << "Cart is empty!" << endl;
                     }
                     else{
+                        if (users.find(username) == users.end()) {
+                          cout << "Invalid username" << endl;
+                          continue; 
+                       }
+
                         User* user = users[username];
                         vector<Product*>& cart = userCart[username];
                         vector<Product*> remainingCart;
@@ -212,9 +227,6 @@ int main(int argc, char* argv[])
             
             }
 	    /* Add support for other commands here */
-
-
-
 
             else {
                 cout << "Unknown command" << endl;

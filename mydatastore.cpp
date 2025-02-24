@@ -29,8 +29,8 @@ void MyDataStore::addProduct(Product* p){
     products_.insert(p);
     std::set<std::string> keywords = p->keywords();
 
-    //debug
-    std::cout << "DEBUG: Adding product: " << p->getName() << " with keywords: ";
+    // //debug
+    // std::cout << "DEBUG: Adding product: " << p->getName() << " with keywords: ";
 
 
     for(const std:: string& keyword : keywords){
@@ -45,8 +45,8 @@ void MyDataStore::addUser(User* u){
     std::string username = convToLower(u->getName()); 
     users_[u->getName()] = u;
 
-    //debugging
-    std::cout << "DEBUG: Added user " << username << std::endl;
+    // //debugging
+    // std::cout << "DEBUG: Added user " << username << std::endl;
 
 
 }
@@ -91,7 +91,6 @@ void MyDataStore::dump(std::ostream& ofile){
         p->dump(ofile);
     }
 
-    ofile << std::endl; 
     ofile << "</products>" << std::endl;
     ofile << "<users>" << std::endl;
 

@@ -1,0 +1,13 @@
+978-013292372-9 abstraction and carrano data henry problem solving with 978-837023774-5 east eden john of steinbeck 111-000000000-1 robot Read 3 products
+Read 1 users
+=====================================
+Menu: 
+  AND term term ...                  
+  OR term term ...                   
+  ADD username search_hit_number     
+  VIEWCART username                  
+  BUYCART username                   
+  QUIT new_db_filename               
+====================================
+
+Enter command: 

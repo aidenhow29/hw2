@@ -133,8 +133,8 @@ bool ProductSectionParser::parse(
 {
     string line;
     while(getline(is, line)) {
-        /* DEBUG */
-        std::cout << "DEBUG: Reading product line: " << line << std::endl;
+        // /* DEBUG */
+        // std::cout << "DEBUG: Reading product line: " << line << std::endl;
 
         stringstream ss(line);
         string category;
